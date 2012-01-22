@@ -1,0 +1,95 @@
+<html>
+    <script type="text/javascript" charset="utf-8" src="jquery-1.7.1.js"> </script>
+    <script type="text/javascript" charset="utf-8" src="storage.js"> </script>
+    <script type="text/javascript" charset="utf-8" src="utils.js"> </script>
+  <script>
+
+    var STORAGE = new Storage();
+    var METHODS = {
+        get_config: function get_config(request) {
+                    return STORAGE.get_all();
+            },
+        set_config: function set_config(request) {
+                if (request["value"]) {
+                    for (i in request["value"]) {
+                        STORAGE.set(request[i]);
+                    }
+                    return true;
+                }
+                return false;
+
+            },
+        load_watched_list: function method_load_watched_list(request) {
+                return load_watched_list();
+            },
+
+    }
+    chrome.extension.onRequest.addListener(
+          function(request, sender, sendResponse) {
+              var type = request["type"];
+              var method = METHODS[type];
+              if (!method) {
+                  return sendResponse(false);
+              }
+              var result = method(request);
+              var return_data = {'status': "ERROR"};
+              if (result) {
+                  return_data['status'] = 'OK';
+                  return_data['value'] = result;
+              }
+              return sendResponse(return_data);
+              });
+
+    function load_watched_list() {
+        var watched_list = localStorage.getItem('watched_list');
+        if (watched_list) {
+            try {
+                watched_list = JSON.parse(watched_list);
+            } catch (e) {
+                watched_list = {}
+            }
+        } else {
+            watched_list = {}
+        }
+        return watched_list
+    }
+
+    function save_watched_list(watch_list) {
+        localStorage.setItem('watched_list', JSON.stringify(watch_list));
+    }
+
+
+    function save_watched_data(html) {
+        var watched_list = {};
+        var titles = $(html).find("a.animetitle");
+        for (var i = 0; i < titles.length; i++){
+            var el = titles[i];
+            matched = el.href.match(/anime\/(\d+)\/(.*)$/);
+            var id = matched[1];
+            var title_name = matched[2];
+            watched_list[id] = title_name;
+            }
+        save_watched_list(watched_list);
+    }
+
+    function get_watched_data() {
+        return localStorage["watched_list"];
+    }
+
+    function UpdateWatchedList() {
+        var username = STORAGE.get("username");
+        if (username) {
+            console.log("UpdateWatchedList for user: " + username);
+            $.get("http://myanimelist.net/animelist/" + username + "&status=2&order=0", save_watched_data, "html");
+        }
+    }
+
+    UpdateWatchedList();
+
+    var update_watched_task = new Task(UpdateWatchedList, STORAGE.get("update_interval") * 60);
+    update_watched_task.start()
+
+    //window.setTimeout(function() { UpdateWatchedList() }, 1000 * 60 * 30 /* 30 minute */);
+
+  </script>
+</html>

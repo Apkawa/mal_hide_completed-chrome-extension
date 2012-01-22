@@ -1,0 +1,24 @@
+{
+    "name": "MyAnimeList Hide watched Anime",
+    "version": "0.1",
+    "description": "For hidding watched anime on page http://myanimelist.net/topanime.php",
+    "browser_action": {
+        "default_icon": "icon16.ico"
+    },
+    "icons": {
+        "16": "icon16.ico",
+        "48": "icon48.png",
+        "128": "icon128.png"
+    },
+    "options_page": "options.html",
+    "background_page": "background.html",
+    "permissions": [
+        "tabs", "http://myanimelist.net/*"
+    ],
+    "content_scripts": [
+    {
+        "matches": ["http://myanimelist.net/topanime.php*"],
+        "js" : ["jquery-1.7.1.js", "contentscript.js"]
+    }
+    ]
+}

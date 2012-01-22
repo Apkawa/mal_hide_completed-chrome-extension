@@ -1,0 +1,58 @@
+<html>
+<head><title>Options</title></head>
+<script type="text/javascript">
+
+var bgPage = chrome.extension.getBackgroundPage();
+var OPTIONS = {};
+
+// Saves options to localStorage.
+function save_options() {
+    for (key in OPTIONS) {
+        bgPage.STORAGE.set(key, document.getElementById(key).value);
+    }
+
+    // Update status to let user know options were saved.
+    var status = document.getElementById("status");
+    status.innerHTML = "Options Saved.";
+    setTimeout(function() {
+        status.innerHTML = "";
+    }, 750);
+    bgPage.UpdateWatchedList();
+    bgPage.update_watched_task.change_delay(bgPage.STORAGE.get("update_interval") * 60);
+}
+
+// Restores select box state to saved value from localStorage.
+function restore_options() {
+    OPTIONS = {}
+    var options = bgPage.STORAGE.get_all();
+    if (!options) {
+    return;
+    }
+    for (i in options) {
+      el = document.getElementById(i)
+      if (el) {
+        el.value = options[i];
+        OPTIONS[i] = options[i];
+      }
+    }
+}
+
+</script>
+
+<body onload="restore_options()">
+    <div id="status"> </div>
+    <ul>
+      <li>
+        <label for="username">Username in MAL</label>
+        <input type="text" name="username" id="username" value="">
+      </li>
+      <li>
+        <label for="update_interval">Update interval (minutes)</label>
+        <input type="text" name="update_interval" id="update_interval" value="30">
+      </li>
+    </ul>
+
+<br>
+<button onclick="save_options()">Save</button>
+</body>
+</html>
