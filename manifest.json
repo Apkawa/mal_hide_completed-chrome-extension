@@ -1,7 +1,7 @@
 {
     "name": "MyAnimeList Hide watched Anime",
     "version": "0.1",
-    "description": "For hidding watched anime on page http://myanimelist.net/topanime.php",
+    "description": "For hide completed anime on page http://myanimelist.net/topanime.php",
     "browser_action": {
         "default_icon": "icon16.ico"
     },
