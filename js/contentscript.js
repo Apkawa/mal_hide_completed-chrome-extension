@@ -1,8 +1,19 @@
 var WATCHING_LIST = undefined;
 var HIDE_FLAG = true;
 
+
+var location_type = (function test_location(loc) {
+    var match = loc.match(/^http:\/\/myanimelist.net\/(anime|topanime).php\?/);
+    if (match) {
+        return match[1]
+    }
+    return false;
+
+})(location.href);
+
+
 function ToggleWatchedAnime(watched_list) {
-    $("a.hoverinfo_trigger").each(function (index, el) {
+    $("a[href^='http://myanimelist.net/anime/']").each(function (index, el) {
             matched = el.href.match(/anime\/(\d+)\/(.*)$/);
             var id = matched[1];
             var title_name = matched[2];
@@ -14,6 +25,7 @@ function ToggleWatchedAnime(watched_list) {
         });
 }
 
+
 function draw_button() {
     if (HIDE_FLAG) {
         var text_button = "Show watched";
@@ -24,11 +36,18 @@ function draw_button() {
 
     if (!button.length) {
         var button = $('<button id="hide_toggle">Show watched</button>').text(text_button);
-        $("#horiznav_nav").next().children("h2").first().append(button);
+        if (location_type === 'topanime') {
+            $("#horiznav_nav").next().children("h2").first().append(button);
+        } else {
+            if (location_type === 'anime') {
+                $("#horiznav_nav").next().children("div").first().prepend(button.css('float', 'left'));
+            }
+        }
     } else {
         button.text(text_button)
     }
 }
+
 
 function set_config(config) {
     chrome.extension.sendRequest(
@@ -42,6 +61,7 @@ function set_config(config) {
     );
 
 }
+
 
 function init(config) {
     HIDE_FLAG = config['hide_flag'] || true;
@@ -60,10 +80,10 @@ function init(config) {
     });
 }
 
+
 chrome.extension.sendRequest({"type": "get_config"}, function responseCallback(response) {
     console.log(["get config", response]);
         if (response["value"]) {
             init(response["value"]);
         }
 });
-

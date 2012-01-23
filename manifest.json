@@ -3,12 +3,12 @@
     "version": "0.1",
     "description": "For hide completed anime on page http://myanimelist.net/topanime.php",
     "browser_action": {
-        "default_icon": "icon16.ico"
+        "default_icon": "icons/icon16.ico"
     },
     "icons": {
-        "16": "icon16.ico",
-        "48": "icon48.png",
-        "128": "icon128.png"
+        "16": "icons/icon16.ico",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
     },
     "options_page": "options.html",
     "background_page": "background.html",
@@ -17,8 +17,8 @@
     ],
     "content_scripts": [
     {
-        "matches": ["http://myanimelist.net/topanime.php*"],
-        "js" : ["jquery-1.7.1.js", "contentscript.js"]
+        "matches": ["http://myanimelist.net/topanime.php*", "http://myanimelist.net/anime.php?*"],
+        "js" : ["js/jquery-1.7.1.js", "js/contentscript.js"]
     }
     ]
 }
